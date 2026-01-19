@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "mealbot"
+version = "0.1.0"
+description = "Mealbot Python port - automated meal pairing application"
+authors = ["John Amadeo Daniswara"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "0.115.*"
+uvicorn = {extras = ["standard"], version = "0.31.*"}
+sqlalchemy = "2.0.*"
+psycopg2-binary = "2.9.*"
+alembic = "1.13.*"
+pydantic = "2.9.*"
+pydantic-settings = "2.6.*"
+python-jose = {extras = ["cryptography"], version = "3.3.*"}
+python-multipart = "0.0.*"
+httpx = "0.27.*"
+apscheduler = "3.10.*"
+python-dotenv = "1.0.*"
+requests = "2.32.*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.3.*"
+pytest-asyncio = "0.24.*"
+pytest-cov = "6.0.*"
+black = "24.10.*"
+ruff = "0.7.*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
