@@ -15,6 +15,7 @@ from fastapi import FastAPI, HTTPException, status
 from mealbot.auth import get_current_user  # noqa: F401
 from mealbot.cors import setup_cors
 from mealbot.models import MessageResponse
+from mealbot.organizations import router as orgs_router
 
 # Configure logging
 # Uses structured logging format compatible with Heroku (stdout, single-line)
@@ -162,7 +163,14 @@ app = FastAPI(
 # Must be added before routes to ensure CORS headers are included in all responses
 setup_cors(app)
 
-logger.info("Mealbot API initialized with CORS middleware")
+# Include organization routes
+# These endpoints mirror the Go implementation in org.go:
+# - GET /orgs - Retrieve organizations by admin
+# - POST /org - Create a new organization
+# - POST /crossmatchtrait - Set cross-match trait
+app.include_router(orgs_router)
+
+logger.info("Mealbot API initialized with CORS middleware and organization routes")
 
 
 @app.get("/health")

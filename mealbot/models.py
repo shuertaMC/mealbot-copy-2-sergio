@@ -4,7 +4,7 @@ This module defines Pydantic models for domain entities and request/response DTO
 The models mirror the Go struct definitions from org.go and response.go.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -53,3 +53,15 @@ class MessageResponse(BaseModel):
     """
 
     Message: str
+
+
+class OrgsResponse(BaseModel):
+    """Response model for GET /orgs endpoint.
+
+    This matches the response format from GetOrganizationsHandler in org.go (line 61):
+    resp := map[string][]string{"orgs": organizations}
+
+    Returns a JSON object with a list of organization names.
+    """
+
+    orgs: List[str]
