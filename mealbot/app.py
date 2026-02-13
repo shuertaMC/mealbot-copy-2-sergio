@@ -10,6 +10,8 @@ import os
 from flask import Flask
 from flask_cors import CORS
 
+from mealbot.models.organization import org_bp
+
 try:
     from dotenv import load_dotenv
 except ImportError:
@@ -67,6 +69,9 @@ def create_app(config: dict | None = None) -> Flask:
     @app.route("/health")
     def health_check():
         return {"status": "ok"}
+
+    # Register organization routes
+    app.register_blueprint(org_bp)
 
     logger.info("Mealbot application created")
     return app
