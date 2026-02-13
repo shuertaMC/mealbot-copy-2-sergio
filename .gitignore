@@ -148,3 +148,11 @@ nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
+
+# ----- Flask / Gunicorn -----
+instance/
+.webassets-cache
+
+# ----- Database -----
+*.db
+*.sqlite
