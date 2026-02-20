@@ -18,6 +18,7 @@ from typing import Optional
 
 import jwt
 import requests
+from cryptography.x509 import load_pem_x509_certificate
 from flask import Response, request
 
 logger = logging.getLogger("mealbot.auth")
@@ -158,20 +159,19 @@ def get_auth_handler(f):
                     content_type="application/json",
                 )
 
-            # Load the public key from the certificate
-            public_key = jwt.algorithms.RSAAlgorithm.from_jwk(
-                # We have a certificate, need to extract public key
-                # PyJWT can load from PEM certificate directly
-                None
-            )
+            # Extract the public key from the X.509 certificate.
+            # The Go code uses jwt.ParseRSAPublicKeyFromPEM(cert) which
+            # extracts the RSA public key from the certificate. PyJWT's
+            # jwt.decode can accept the PEM certificate directly when
+            # using the cryptography backend.
+            cert_obj = load_pem_x509_certificate(cert.encode("utf-8"))
+            public_key = cert_obj.public_key()
 
             # Decode and validate the token
-            # PyJWT handles audience and issuer verification natively
             decoded = jwt.decode(
                 token,
-                cert,
+                public_key,
                 algorithms=["RS256"],
-                audience=config["audience"],
                 issuer=config["issuer"],
                 options={
                     "verify_aud": False,  # We'll verify manually like Go

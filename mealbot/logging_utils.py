@@ -16,10 +16,11 @@ from flask import Response
 logger = logging.getLogger("mealbot")
 
 
-def _message_to_bytes(message: str) -> str:
+def str_to_bytes(message: str) -> str:
     """Convert a string message to the JSON {"Message": "..."} format.
 
-    Equivalent to Go's server.StrToBytes().
+    Equivalent to Go's server.StrToBytes(). Use this to wrap plain-text
+    success messages before passing to log_and_write.
     """
     return json.dumps({"Message": message})
 
@@ -64,12 +65,13 @@ def log_and_write(
 ) -> Response:
     """Log a debug message and return a Flask Response.
 
-    Equivalent to Go's LogAndWrite.
+    Equivalent to Go's LogAndWrite. This function writes data as-is
+    (no wrapping). Callers must pre-format the data:
+    - For success messages, use str_to_bytes("message") first.
+    - For JSON data, use json.dumps(obj) first.
 
     Args:
-        data: Response body. If it's a string, it will be wrapped in
-              {"Message": "..."} format. If it's bytes/already encoded,
-              it will be used directly.
+        data: Response body as a string or bytes (pre-formatted).
         status: HTTP status code.
         function: Name of the calling function (for log context).
 
@@ -82,16 +84,8 @@ def log_and_write(
         extra={"function": function},
     )
 
-    if isinstance(data, str):
-        body = _message_to_bytes(data)
-    elif isinstance(data, bytes):
-        body = data
-    else:
-        # Already encoded JSON string or similar
-        body = data
-
     return Response(
-        body,
+        data,
         status=status,
         content_type="application/json",
     )

@@ -18,6 +18,7 @@ from .logging_utils import (
     log_and_write_err,
     log_and_write_status_bad_request,
     log_and_write_status_internal_server_error,
+    str_to_bytes,
 )
 from .utils import get_query_param
 
@@ -208,7 +209,7 @@ def create_organization_handler() -> Response:
         return log_and_write_status_internal_server_error(err, function)
 
     return log_and_write(
-        "Successfully created new organization",
+        str_to_bytes("Successfully created new organization"),
         201,
         function,
     )
@@ -256,7 +257,7 @@ def cross_match_trait_handler() -> Response:
         return log_and_write_status_internal_server_error(err, function)
 
     return log_and_write(
-        "Successfully set the cross match trait",
+        str_to_bytes("Successfully set the cross match trait"),
         201,
         function,
     )

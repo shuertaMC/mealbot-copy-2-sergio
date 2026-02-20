@@ -83,13 +83,18 @@ def _register_routes(app: Flask, testing: bool = False) -> None:
     else:
         auth = get_auth_handler
 
+    # Go's ServeMux routes all HTTP methods to the handler; the handler
+    # itself checks the method and returns 405 for unsupported ones.
+    # We replicate this by registering routes with all common methods.
+    all_methods = ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"]
+
     # Organization routes
     # Go: serveMux.Handle("/orgs", mw.Apply(GetOrganizationsHandler))
     app.add_url_rule(
         "/orgs",
         endpoint="get_organizations",
         view_func=auth(get_organizations_handler),
-        methods=["GET", "OPTIONS"],
+        methods=all_methods,
     )
 
     # Go: serveMux.Handle("/org", mw.Apply(CreateOrganizationHandler))
@@ -97,7 +102,7 @@ def _register_routes(app: Flask, testing: bool = False) -> None:
         "/org",
         endpoint="create_organization",
         view_func=auth(create_organization_handler),
-        methods=["POST", "OPTIONS"],
+        methods=all_methods,
     )
 
     # Go: serveMux.Handle("/crossmatchtrait", mw.Apply(CrossMatchTraitHandler))
@@ -105,7 +110,7 @@ def _register_routes(app: Flask, testing: bool = False) -> None:
         "/crossmatchtrait",
         endpoint="cross_match_trait",
         view_func=auth(cross_match_trait_handler),
-        methods=["POST", "OPTIONS"],
+        methods=all_methods,
     )
 
     # Static files are handled by Flask's built-in static file server
