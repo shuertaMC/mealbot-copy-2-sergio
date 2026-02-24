@@ -101,13 +101,17 @@ def create_app(test_config: dict | None = None) -> Flask:
         # Pool cleanup is handled at app shutdown, not per-request
         pass
 
-    # Register routes with authentication middleware
+    # Register routes with authentication middleware.
+    # flask-cors handles OPTIONS preflight automatically, so we only register
+    # the actual methods each route supports. In Go, the CORS middleware
+    # handles OPTIONS and returns early; flask-cors does the same.
+
     # Mirrors Go's serveMux.Handle("/orgs", mw.Apply(GetOrganizationsHandler))
     app.add_url_rule(
         "/orgs",
         endpoint="get_organizations",
         view_func=require_jwt(get_organizations_handler),
-        methods=["GET", "OPTIONS"],
+        methods=["GET"],
     )
 
     # Mirrors Go: serveMux.Handle("/org", mw.Apply(CreateOrganizationHandler))
@@ -115,7 +119,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         "/org",
         endpoint="create_organization",
         view_func=require_jwt(create_organization_handler),
-        methods=["POST", "OPTIONS"],
+        methods=["POST"],
     )
 
     # Mirrors Go: serveMux.Handle("/crossmatchtrait", mw.Apply(CrossMatchTraitHandler))
@@ -123,7 +127,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         "/crossmatchtrait",
         endpoint="cross_match_trait",
         view_func=require_jwt(cross_match_trait_handler),
-        methods=["POST", "OPTIONS"],
+        methods=["POST"],
     )
 
     logger.info("Mealbot Flask application initialized.")
