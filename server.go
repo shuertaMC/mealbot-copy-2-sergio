@@ -63,6 +63,18 @@ func runTestSequence(testMode bool) {
 	}
 }
 
+// main is the application entry point.
+//
+// When a single argument is supplied it runs one of the following
+// administrative commands and exits:
+//
+//   - "pair"    – executes the pairing scheduler (non-test mode).
+//   - "migrate" – runs the last-round-with migration for legacy data.
+//
+// Without arguments it starts the HTTP server on the port given by the PORT
+// environment variable (default 8080), registering all API route handlers
+// behind the authentication + CORS middleware chain and serving the compiled
+// frontend from the ./static directory.
 func main() {
 	args := os.Args
 	if len(args) == 2 {
