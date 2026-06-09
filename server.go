@@ -63,18 +63,22 @@ func runTestSequence(testMode bool) {
 	}
 }
 
-// main is the application entry point.
+// main is the program entry point. It supports two CLI sub-commands and a
+// default HTTP server mode:
 //
-// When a single argument is supplied it runs one of the following
-// administrative commands and exits:
+//   - "pair"    – Runs the pairing scheduler once in production mode
+//     (test_mode=false). Pairs members within each organisation, persists
+//     the results, and sends Mailgun notification emails.
 //
-//   - "pair"    – executes the pairing scheduler (non-test mode).
-//   - "migrate" – runs the last-round-with migration for legacy data.
+//   - "migrate" – Runs the one-time migration that back-fills the
+//     last_round_with field for every existing pair record.
 //
-// Without arguments it starts the HTTP server on the port given by the PORT
-// environment variable (default 8080), registering all API route handlers
-// behind the authentication + CORS middleware chain and serving the compiled
-// frontend from the ./static directory.
+// When invoked without arguments the process starts an HTTP server (default
+// port 8080, overridable via the PORT environment variable). The server
+// applies CORS and JWT-auth middleware to every route and serves the static
+// front-end from ./static for all unmatched paths.
+//
+// Any unrecognised argument is printed to stdout and the process returns.
 func main() {
 	args := os.Args
 	if len(args) == 2 {
